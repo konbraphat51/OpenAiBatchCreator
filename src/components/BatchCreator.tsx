@@ -19,30 +19,89 @@ import type {ParseResult} from "papaparse"
 import {saveAs} from "file-saver"
 
 const OPENAI_PARAMS = [
+	{key: "model", label: "Model", type: "text"},
 	{
-		key: "model",
-		label: "Model",
-		type: "select",
-		options: ["gpt-3.5-turbo", "gpt-4-turbo", "gpt-4o"],
+		key: "frequency_penalty",
+		label: "Frequency Penalty",
+		type: "number",
+		min: -2.0,
+		max: 2.0,
+		step: 0.1,
+		default: 0.0,
 	},
-	{key: "frequency_penalty", label: "Frequency Penalty", type: "number"},
-	{key: "logit_bias", label: "Logit Bias (JSON)", type: "text"},
-	{key: "logprobs", label: "Logprobs", type: "number"},
+	{
+		key: "logprobs",
+		label: "Logprobs",
+		type: "boolean",
+		default: false,
+	},
 	{
 		key: "max_completion_tokens",
 		label: "Max Completion Tokens",
 		type: "number",
 	},
-	{key: "presence_penalty", label: "Presence Penalty", type: "number"},
-	{key: "reasoning_effort", label: "Reasoning Effort", type: "number"},
-	{key: "seed", label: "Seed", type: "number"},
-	{key: "temperature", label: "Temperature", type: "number"},
-	{key: "top_p", label: "Top P", type: "number"},
-	{key: "top_logprobs", label: "Top Logprobs", type: "number"},
+	{
+		key: "presence_penalty",
+		label: "Presence Penalty",
+		type: "number",
+		min: -2.0,
+		max: 2.0,
+		step: 0.1,
+		default: 0.0,
+	},
+	{
+		key: "reasoning_effort",
+		label: "Reasoning Effort",
+		type: "enum",
+		options: [null, "low", "medium", "high"],
+		default: "medium",
+	},
+	{
+		key: "seed",
+		label: "Seed",
+		type: "integer",
+		step: 1,
+		default: null,
+	},
+	{
+		key: "temperature",
+		label: "Temperature",
+		type: "number",
+		min: 0.0,
+		max: 2.0,
+		step: 0.1,
+		default: 1.0,
+	},
+	{
+		key: "top_p",
+		label: "Top P",
+		type: "number",
+		min: 0.0,
+		max: 1.0,
+		step: 0.1,
+		default: 1.0,
+	},
+	{
+		key: "top_logprobs",
+		label: "Top Logprobs",
+		type: "integer",
+		min: 0,
+		max: 20,
+		step: 1,
+		default: 10,
+	},
 ]
 
 const defaultParams: Record<string, any> = {
-	model: "gpt-3.5-turbo",
+	model: "o4-mini",
+	frequency_penalty: 0.0,
+	logprobs: false,
+	presence_penalty: 0.0,
+	reasoning_effort: "medium",
+	seed: null,
+	temperature: 1.0,
+	top_p: 1.0,
+	top_logprobs: 10,
 }
 
 const BatchCreator: React.FC = () => {
@@ -116,14 +175,6 @@ const BatchCreator: React.FC = () => {
 				messages,
 				...params,
 			}
-			// Parse logit_bias if present
-			if (typeof req.logit_bias === "string" && req.logit_bias.trim()) {
-				try {
-					req.logit_bias = JSON.parse(req.logit_bias)
-				} catch {
-					req.logit_bias = undefined
-				}
-			}
 			return JSON.stringify(req)
 		})
 		const blob = new Blob([lines.join("\n")], {type: "application/jsonl"})
@@ -192,7 +243,8 @@ const BatchCreator: React.FC = () => {
 										key: param.key,
 									}}
 								>
-									{param.type === "select" && param.options ? (
+									{param.type === "select" &&
+									Array.isArray((param as any).options) ? (
 										<FormControl fullWidth>
 											<InputLabel>{param.label}</InputLabel>
 											<Select
@@ -202,9 +254,55 @@ const BatchCreator: React.FC = () => {
 													handleParamChange(param.key, e.target.value)
 												}
 											>
-												{param.options.map((opt: string) => (
+												{(param as any).options.map((opt: string) => (
 													<MenuItem value={opt} key={opt}>
 														{opt}
+													</MenuItem>
+												))}
+											</Select>
+										</FormControl>
+									) : param.type === "boolean" ? (
+										<FormControl fullWidth>
+											<InputLabel>{param.label}</InputLabel>
+											<Select
+												value={
+													params[param.key] === true
+														? "true"
+														: params[param.key] === false
+														? "false"
+														: ""
+												}
+												label={param.label}
+												onChange={(e) =>
+													handleParamChange(
+														param.key,
+														e.target.value === "true",
+													)
+												}
+											>
+												<MenuItem value="true">true</MenuItem>
+												<MenuItem value="false">false</MenuItem>
+											</Select>
+										</FormControl>
+									) : param.type === "enum" ? (
+										<FormControl fullWidth>
+											<InputLabel>{param.label}</InputLabel>
+											<Select
+												value={params[param.key] ?? param.default ?? ""}
+												label={param.label}
+												onChange={(e) =>
+													handleParamChange(
+														param.key,
+														e.target.value === "null" ? null : e.target.value,
+													)
+												}
+											>
+												{(param.options || []).map((opt: string | null) => (
+													<MenuItem
+														value={opt === null ? "null" : opt}
+														key={opt === null ? "null" : opt}
+													>
+														{opt === null ? "null" : opt}
 													</MenuItem>
 												))}
 											</Select>
@@ -212,12 +310,26 @@ const BatchCreator: React.FC = () => {
 									) : (
 										<TextField
 											label={param.label}
-											type={param.type}
+											type={param.type === "integer" ? "number" : param.type}
 											value={params[param.key] ?? ""}
 											onChange={(e) =>
-												handleParamChange(param.key, e.target.value)
+												handleParamChange(
+													param.key,
+													param.type === "number" || param.type === "integer"
+														? e.target.value === ""
+															? ""
+															: param.type === "integer"
+															? parseInt(e.target.value)
+															: Number(e.target.value)
+														: e.target.value,
+												)
 											}
 											fullWidth
+											inputProps={{
+												...(param.min !== undefined ? {min: param.min} : {}),
+												...(param.max !== undefined ? {max: param.max} : {}),
+												...(param.step !== undefined ? {step: param.step} : {}),
+											}}
 										/>
 									)}
 								</Grid>
