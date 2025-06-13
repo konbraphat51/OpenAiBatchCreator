@@ -146,7 +146,8 @@ const BatchCreator: React.FC = () => {
 	) => {
 		let prompt = base
 		headers.forEach((header, idx) => {
-			const re = new RegExp(`\\{${header}\\}`, "g")
+			// Replace variable names as whole words (no brackets)
+			const re = new RegExp(`\\b${header}\\b`, "g")
 			prompt = prompt.replace(re, values[idx] ?? "")
 		})
 		return prompt
