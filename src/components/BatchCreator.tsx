@@ -164,19 +164,24 @@ const BatchCreator: React.FC = () => {
 			return
 		}
 		setCsvError(null)
-		const lines = csvRows.map((row) => {
+		const lines = csvRows.map((row, idx) => {
 			const sys = generatePrompt(systemPrompt, csvHeaders, row)
 			const user = generatePrompt(userPrompt, csvHeaders, row)
 			const messages = [
 				{role: "system", content: sys},
 				{role: "user", content: user},
 			]
-			// Build request object according to OpenAI API spec
-			const req: any = {
+			const body: any = {
 				messages,
 				...params,
 			}
-			return JSON.stringify(req)
+			const request = {
+				custom_id: `request-${idx + 1}`,
+				method: "POST",
+				url: "/v1/chat/completions",
+				body,
+			}
+			return JSON.stringify(request)
 		})
 		const blob = new Blob([lines.join("\n")], {type: "application/jsonl"})
 		saveAs(blob, "openai_batch.jsonl")
