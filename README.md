@@ -12,8 +12,8 @@ A modern React + TypeScript web app for creating OpenAI batch API `.jsonl` files
 - **Result Reader:**
   - Upload a result `.jsonl` file from OpenAI batch API.
   - Extracts `custom_id` and `response.body.choices[0].message.content` from each entry.
-  - Presents results as a single JSON object: `{ "results": [ { "custom_id": ..., "content": ... }, ... ] }`
-  - Copy results to clipboard or download as `.json` file.
+  - Presents results as a CSV table (custom_id, content) directly in the UI.
+  - Copy results as CSV to clipboard or download as a `.csv` file.
 - **Modern UI:**
   - Material UI, responsive layout, tabbed interface for easy switching between creator and reader.
 
@@ -32,14 +32,15 @@ A modern React + TypeScript web app for creating OpenAI batch API `.jsonl` files
 3. **Reading Results**
    - Switch to the **Read Result** tab.
    - Upload a result `.jsonl` file from OpenAI batch API.
-   - View parsed results, copy to clipboard, or download as `.json`.
+   - View parsed results as a CSV table (custom_id, content).
+   - Copy the CSV to clipboard or download as a `.csv` file.
 
 ---
 
 ## Project structure
 
 - `src/components/BatchCreator.tsx` — Main batch creation UI and logic
-- `src/components/ResultReader.tsx` — Result file reader and exporter
+- `src/components/ResultReader.tsx` — Result file reader and CSV exporter
 - `src/App.tsx` — Tabbed interface
 - `src/App.css` — Styling
 
