@@ -7,11 +7,13 @@ import {
 	Box,
 	Alert,
 	Divider,
+	Snackbar,
 } from "@mui/material"
 
 const ResultReader: React.FC = () => {
 	const [jsonlError, setJsonlError] = useState<string | null>(null)
 	const [jsonResult, setJsonResult] = useState<string | null>(null)
+	const [snackbarOpen, setSnackbarOpen] = useState(false)
 
 	const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setJsonlError(null)
@@ -48,6 +50,7 @@ const ResultReader: React.FC = () => {
 	const handleCopy = () => {
 		if (jsonResult) {
 			navigator.clipboard.writeText(jsonResult)
+			setSnackbarOpen(true)
 		}
 	}
 
@@ -112,6 +115,13 @@ const ResultReader: React.FC = () => {
 						</pre>
 					</Box>
 				)}
+				<Snackbar
+					open={snackbarOpen}
+					autoHideDuration={2000}
+					onClose={() => setSnackbarOpen(false)}
+					message="Copied to clipboard!"
+					anchorOrigin={{vertical: "bottom", horizontal: "center"}}
+				/>
 			</Paper>
 		</Container>
 	)
