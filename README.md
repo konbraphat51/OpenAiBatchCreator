@@ -19,6 +19,8 @@ A modern React + TypeScript web app for creating OpenAI batch API `.jsonl` files
 
 ## How to Use
 
+日本語: https://qiita.com/konbraphat51/items/ff66da3e20871a1105b6
+
 1. **Access**
    https://konbraphat51.github.io/OpenAiBatchCreator/
 
