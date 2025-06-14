@@ -19,39 +19,24 @@ A modern React + TypeScript web app for creating OpenAI batch API `.jsonl` files
 
 ## How to Use
 
-1. **Install dependencies:**
+1. **Access**
+   https://konbraphat51.github.io/OpenAiBatchCreator/
 
-   ```sh
-   pnpm install
-   # or
-   npm install
-   ```
-
-2. **Start the development server:**
-
-   ```sh
-   pnpm dev
-   # or
-   npm run dev
-   ```
-
-   The app will be available at `http://localhost:5173` (or as shown in your terminal).
-
-3. **Batch Creator Tab:**
+2. **Creating Batch files**
 
    - Enter your base system and user prompts. Use variable names (e.g. `A`, `B`) directly in the prompt text.
    - Configure OpenAI parameters as needed.
    - Upload a CSV file (first row: variable names; next rows: values).
    - Click **Create** to download a `.jsonl` file ready for OpenAI's batch API.
 
-4. **Read Result Tab:**
+3. **Reading Results**
    - Switch to the **Read Result** tab.
    - Upload a result `.jsonl` file from OpenAI batch API.
    - View parsed results, copy to clipboard, or download as `.json`.
 
 ---
 
-**Project structure:**
+## Project structure
 
 - `src/components/BatchCreator.tsx` — Main batch creation UI and logic
 - `src/components/ResultReader.tsx` — Result file reader and exporter
