@@ -30,12 +30,6 @@ const OPENAI_PARAMS = [
 		default: 0.0,
 	},
 	{
-		key: "logprobs",
-		label: "Logprobs",
-		type: "boolean",
-		default: false,
-	},
-	{
 		key: "max_completion_tokens",
 		label: "Max Completion Tokens",
 		type: "number",
@@ -81,27 +75,16 @@ const OPENAI_PARAMS = [
 		step: 0.1,
 		default: 1.0,
 	},
-	{
-		key: "top_logprobs",
-		label: "Top Logprobs",
-		type: "integer",
-		min: 0,
-		max: 20,
-		step: 1,
-		default: 10,
-	},
 ]
 
 const defaultParams: Record<string, any> = {
 	model: "o4-mini",
 	frequency_penalty: 0.0,
-	logprobs: false,
 	presence_penalty: 0.0,
 	reasoning_effort: "medium",
 	seed: null,
 	temperature: 1.0,
 	top_p: 1.0,
-	top_logprobs: 10,
 }
 
 const BatchCreator: React.FC = () => {
