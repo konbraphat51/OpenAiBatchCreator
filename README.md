@@ -1,54 +1,63 @@
-# React + TypeScript + Vite
+# OpenAI Batch Creator & Result Reader
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern React + TypeScript web app for creating OpenAI batch API `.jsonl` files from CSVs and reading OpenAI batch result `.jsonl` files. Built with Vite and Material UI.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Batch Creator:**
+  - Set base system and user prompts with CSV variable substitution (no brackets, just variable names).
+  - Configure all OpenAI chat completion parameters (type-checked, range-limited, easily extensible).
+  - Upload a CSV file (first row: variable names, subsequent rows: values).
+  - Generate and download a `.jsonl` file for OpenAI's batch API, with each line a full request object (including custom_id, method, url, and body).
+- **Result Reader:**
+  - Upload a result `.jsonl` file from OpenAI batch API.
+  - Extracts `custom_id` and `response.body.choices[0].message.content` from each entry.
+  - Presents results as a single JSON object: `{ "results": [ { "custom_id": ..., "content": ... }, ... ] }`
+  - Copy results to clipboard or download as `.json` file.
+- **Modern UI:**
+  - Material UI, responsive layout, tabbed interface for easy switching between creator and reader.
 
-## Expanding the ESLint configuration
+## How to Use
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. **Install dependencies:**
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+   ```sh
+   pnpm install
+   # or
+   npm install
+   ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. **Start the development server:**
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+   ```sh
+   pnpm dev
+   # or
+   npm run dev
+   ```
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+   The app will be available at `http://localhost:5173` (or as shown in your terminal).
+
+3. **Batch Creator Tab:**
+
+   - Enter your base system and user prompts. Use variable names (e.g. `A`, `B`) directly in the prompt text.
+   - Configure OpenAI parameters as needed.
+   - Upload a CSV file (first row: variable names; next rows: values).
+   - Click **Create** to download a `.jsonl` file ready for OpenAI's batch API.
+
+4. **Read Result Tab:**
+   - Switch to the **Read Result** tab.
+   - Upload a result `.jsonl` file from OpenAI batch API.
+   - View parsed results, copy to clipboard, or download as `.json`.
+
+---
+
+**Project structure:**
+
+- `src/components/BatchCreator.tsx` — Main batch creation UI and logic
+- `src/components/ResultReader.tsx` — Result file reader and exporter
+- `src/App.tsx` — Tabbed interface
+- `src/App.css` — Styling
+
+---
+
+MIT License
