@@ -7,8 +7,6 @@ import {
 	Box,
 	Alert,
 	Divider,
-	Tabs,
-	Tab,
 } from "@mui/material"
 
 const ResultReader: React.FC = () => {
@@ -47,6 +45,28 @@ const ResultReader: React.FC = () => {
 		reader.readAsText(file)
 	}
 
+	const handleCopy = () => {
+		if (jsonResult) {
+			navigator.clipboard.writeText(jsonResult)
+		}
+	}
+
+	const handleDownload = () => {
+		if (jsonResult) {
+			const blob = new Blob([jsonResult], {type: "application/json"})
+			const url = URL.createObjectURL(blob)
+			const a = document.createElement("a")
+			a.href = url
+			a.download = "results.json"
+			document.body.appendChild(a)
+			a.click()
+			setTimeout(() => {
+				URL.revokeObjectURL(url)
+				document.body.removeChild(a)
+			}, 0)
+		}
+	}
+
 	return (
 		<Container maxWidth="md" sx={{py: 4}}>
 			<Paper elevation={3} sx={{p: 4}}>
@@ -71,6 +91,14 @@ const ResultReader: React.FC = () => {
 				{jsonResult && (
 					<Box sx={{mt: 3}}>
 						<Typography variant="h6">Parsed Results</Typography>
+						<Box sx={{display: "flex", gap: 2, mb: 1}}>
+							<Button variant="outlined" size="small" onClick={handleCopy}>
+								Copy
+							</Button>
+							<Button variant="outlined" size="small" onClick={handleDownload}>
+								Download JSON
+							</Button>
+						</Box>
 						<pre
 							style={{
 								textAlign: "left",
