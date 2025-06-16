@@ -78,7 +78,14 @@ const ResultReader: React.FC = () => {
 				for (const row of results) {
 					csvRows.push(
 						header
-							.map((h) => `"${String(row[h]).replace(/"/g, '""')}"`)
+							.map((h) => {
+								let value = String(row[h])
+								if (h === "content") {
+									// Escape double quotes and newlines for CSV
+									value = value.replace(/"/g, '""').replace(/\r?\n|\r/g, "\\n")
+								}
+								return `"${value}"`
+							})
 							.join(","),
 					)
 				}
